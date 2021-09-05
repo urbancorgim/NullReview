@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<div class="row container my-3">
+    <img class="img-corny" src="{% static 'assets/img/community_corn.png' %}" alt="..." />
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {%if request.account.is_authenticated%}
+        <input type="hidden" value="{{request.account.id}}">
+        {%else%}
+        <input type="hidden" value="1">
+        {%endif%}
+        {{ form.as_p }}
+        {{commu}}
+        <button class="btn btn-primary" type="submit">등록하기</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block main %}
+<div class="row container my-3">
+    <img class="img-corny" src="{% static 'assets/img/review_corn.png' %}" alt="..." />
+
+    <form method="post">  <!--동일한 템플릿을 여러 기능에서 함께 사용할 경우 form의 action 속성을 비워둘 수 있음.-->
+        {% csrf_token %}
+
+        {{ form.as_p }}
+        <div>
+            <button type="submit" class="btn btn-primary">등록</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

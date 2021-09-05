@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load review_filter %}
+
+
+{% block main %}
+<div class="row container my-3">
+    <img class="img-corny" src="{% static 'assets/img/movie_corn.png' %}" alt="..." />
+
+    <div class="list-link">
+        <a href="{% url 'movie:index' %}">< 목록으로</a>
+
+        <div>
+            {% if request.user.is_superuser %}
+            <span>
+                <a href="{% url 'movie:modify' movie.id%}" role="button">수정</a>
+            </span>
+            <span>
+                <script type="text/javascript">
+                   function button_event(){
+                   if (confirm("삭제된 영화는 복구가 불가능합니다. 영화를 삭제하시겠습니까?") == true){
+                        location.replace("{% url 'movie:delete' movie.id  %}");
+                    }
+                    else{
+                        return;
+                    }
+                    }
+                </script>
+                <a onclick="button_event();">삭제</a>
+            </span>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="card">
+        <div class="movie-img-info">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}">
+            {% else %}
+                <img src="{% static 'images/noimg.jpg' %}">
+            {% endif %}
+
+
+            <div class="movie-title">
+                <h2>{{movie.title}}</h2>
+                <dl>
+                    <dt>감독</dt>
+                    <dd>{{movie.director}}</dd>
+                </dl>
+                <dl>
+                    <dt>개봉일</dt>
+                    <dd>{{movie.pub_date}}</dd>
+                </dl>
+                <dl>
+                    <dt>상영시간</dt>
+                    <dd>{{movie.running_time}}분</dd>
+                </dl>
+                <dl>
+                    <dt>관람연령</dt>
+                    <dd>{{movie.age_limit}}</dd>
+                </dl>
+
+                <a class="btn btn-primary" type="button" href="{% url 'movie:pick' movie.id %}" role="button">
+                {% if pick is False %}
+                    찜하기♥
+                {% else %}
+                    찜 삭제
+                {% endif %}
+                </a>
+            </div>
+
+        </div>
+
+        <div class="movie-description">
+            <div class="movie-description-title">영화설명</div>
+            <div class="movie-description-content">{{movie.description|linebreaks}}</div>
+        </div>
+    </div>
+
+    <div class="movie-content">
+
+    </div>
+
+    <style>
+
+        .list-link {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .list-link>a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .list-link div {
+            float: right;
+        }
+
+        .list-link div a {
+            text-decoration: none;
+        }
+
+        .card {
+            padding: 20px;
+        }
+        .movie-img-info {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .movie-img-info img {
+            width: 280px;
+            height: 400px;
+        }
+
+        .movie-img-info .movie-title {
+            width: 100%;
+            position: relative;
+            height: inherit;
+            margin-left: 15px;
+        }
+
+        .movie-title h2 {
+            color: #f5bc10;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        dl dt, .movie-description-title {
+            width: 80px;
+            display: inline-block;
+            color: #f5bc10;
+            font-weight: bold;
+        }
+
+        dl dd, .movie-description-content {
+            width: calc (100% - 80px);
+            display: inline-block;
+        }
+
+        .movie-description {
+            margin-top: 30px;
+            display: flex;
+        }
+
+
+
+        .movie-title a.btn.btn-primary {
+            text-decoration: none;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+    </style>
+</div>
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load review_filter %}
+
+
+{% block main %}
+<div class="row container my-3" style="width: 900px">
+    <img class="img-corny" src="{% static 'assets/img/profile_corn.png' %}" alt="..." />
+     <div>
+        <ul class="list-group">
+            <li class="list-group-item" style="border-bottom-width: 5px;"><b style="font-size: 18px">{{ request.user.nickname }} ({{request.user.email}}) 님의 마이페이지입니다.</b></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:review'%}" style="color: #f5bc10; font-weight: bold; text-decoration: none;">내가 쓴 리뷰</a></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:pick'%}" style="color: black; text-decoration: none;">찜한 영화</a></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:logout' %}" style="color: #f08200; font-weight: bold; text-decoration: underline;">로그아웃</a></li>
+        </ul>
+    </div>
+
+
+
+    <table class="table">
+        <thead>
+        <tr class="review_table">
+            <th class="table-count">번호</th>
+            <th class="table-horse">영화명</th>
+            <th class="table-title">제목</th>
+            <th class="table-star">별점</th>
+            <th class="table-writer">작성자</th>
+            <th class="table-date">작성일</th>
+            <th class="table-count">추천</th>
+            <th class="table-count">비추</th>
+            <th class="table-count">조회</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if review_list %}
+        {% for review in review_list %}
+        <tr>
+            <td class="table-count">
+                {{ review_list.paginator.count|sub:review_list.start_index|sub:forloop.counter0|add:1 }}
+            </td>
+            <td class="table-horse">
+                {{ review.movie.title }}
+            </td>
+            <td class="table-title">
+                <a href="{% url 'review:review_detail' review.id %}">{{ review }}</a>
+            </td>
+            <td class="star table-star">
+                {% if review.star == 0 %}
+                    ☆☆☆☆☆
+                {% elif review.star == 1 %}
+                    ★☆☆☆☆
+                {% elif review.star == 2 %}
+                    ★★☆☆☆
+                {% elif review.star == 3 %}
+                    ★★★☆☆
+                {% elif review.star == 4 %}
+                    ★★★★☆
+                {% else %}
+                    ★★★★★
+                {% endif %}
+            </td>
+            <td class="table-writer">{{ review.author }}</td>
+            <td class="table-date">
+                {{ review.create_date| date:"y/m/d" }}
+            </td>
+            <td class="table-count">{{ review.like_review.count }}</td>
+            <td class="table-count">{{ review.unlike_review.count }}</td>
+            <td class="table-count">{{ review.review_hit }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td>리뷰가 없습니다.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    <div class="d-flex flex-row-reverse">
+        <a class="btn btn-primary" href="{% url 'review:review_create' %}" role="button" style="padding: 15px 28px">리뷰작성</a>
+    </div>
+
+    <ul class="pagination justify-content-center">
+        {% if review_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1"><<</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><<</a>
+        </li>
+        {% endif %}
+        {% if review_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ review_list.previous_page_number }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+        </li>
+        {% endif %}
+        {% for page in page_range %}
+            <li class="page-item {% if page == review_list.number %}active{% endif %}" aria-current="page">
+                <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+            </li>
+        {% endfor %}
+        {% if review_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ review_list.next_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+        {% if review_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ review_list.paginator.num_pages }}">>></a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">>></a>
+        </li>
+        {% endif %}
+    </ul>
+
+</div>
+
+<style>
+    select {
+        display: inline-block;
+        border-radius: 3px;
+        padding: 5px;
+        width: 75px;
+        text-align: center;
+        color: black;
+        border: 1px solid #999999;
+        color: #999999;
+    }
+
+    select option {
+        padding: 5px;
+        border: none;
+    }
+
+    table {
+        min-width: 100%;
+        font-size: 14px;
+        table-layout: fixed;
+    }
+
+    table thead tr {
+        text-align: center;
+    }
+
+    table th,
+    td {
+        vertical-align: middle;
+    }
+
+    table .table-count {
+        width: 4%;
+        text-align: center;
+        padding: 0;
+    }
+
+    table .table-horse {
+        width: 12%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    table .table-star,
+    table .table-writer,
+    table .table-date {
+        width: 8%;
+        text-align: center;
+    }
+
+    table .table-title {
+        width: 35%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table-bottom {
+        position: relative;
+    }
+
+    a.btn.btn-primary,
+    button.btn.btn-primary {
+        padding: 10px;
+        height: 36px;
+        margin-top: -1px;
+    }
+</style>
+
+{% endblock %}

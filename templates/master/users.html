@@ -1,0 +1,59 @@
+<!--유저관리창-->
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block main %}
+<div class="row container my-3" style="
+    padding-left: 0px;
+    padding-right: 0px;
+    width: 1200px;
+    text-align: center;
+">
+    <h1>회원관리</h1>
+    <table class="table row m-0">
+        <thead class="col-12 thead-dark">
+        <tr class="row w-100 m-0">
+            <th scope="col" class="col-4 col-md-2">아이디</th>
+            <th scope="col" class="col-4 col-md-2">닉네임</th>
+            <th scope="col" class="col-4 col-md-2">가입일자</th>
+            <th scope="col" class="col-4 col-md-2">최근로그인</th>
+            <th scope="col" class="col-3 col-md-2 text-center">권한관리</th>
+            <th scope="col" class="col-3 col-md-2 text-center">활성화</th>
+        </tr>
+        </thead>
+        <tbody class="col-12">
+        {% for user in page_obj %}
+        <tr class="row m-0">
+            <td class="col-4 col-md-2 custom-break-word">{{ user.email }}</td>
+            <td class="col-4 col-md-2 custom-break-word">{{ user.nickname }}</td>
+            <td class="col-4 col-md-2 custom-break-word">{{ user.date_joined }}</td>
+            <td class="col-4 col-md-2 custom-break-word">{{ user.last_login }}</td>
+
+            <td class="col-3 col-md-2 text-center">
+                <button class="clickStaff square_btn" onclick="location.href ='{% url 'master:superuser' user.id %}'">
+                {% if user.is_superuser %}
+                     일반회원으로
+                {% else %}
+                     관리자로
+                {% endif %}
+                </button>
+            </td>
+
+            <td class="col-3 col-md-2 text-center">
+                <button class="clickActive square_btn" onclick="location.href ='{% url 'master:active' user.id %}'" >
+                {% if user.is_active %}
+                    비활성화
+                {% else %}
+                    활성화
+                {% endif %}
+                </button>
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

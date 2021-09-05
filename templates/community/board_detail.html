@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="row container my-3">
+    <img class="img-corny" src="{% static 'assets/img/community_corn.png' %}" alt="..." />
+        <h1 class="border-bottom">{{board.title}}</h1>
+            <div class="board-info">
+                <div class="info-star">
+                    <span>
+                        구분 : {{ board.content_type }}
+                    </span>
+                </div>
+
+                <div class="info-info">
+                    <span class="card-text">작성자 {{ board.writer }}</span>
+                    <span> | </span>
+                    <span class="card-text"><small class="text-muted">작성일 {{ board.created_date | date:"Y-m-d h:i" }}</small></span>
+                    <span> | </span>
+                    <span class="card-text"><small class="text-muted">조회수 {{ board.board_hit }}</small></span>
+                </div>
+            </div>
+            <div class="modify_item">
+                {% if request.user == board.writer %}
+                <span>
+                    <a href="{% url 'community:modify' board.id%}" role="button" style="text-decoration: none;">수정</a>
+                </span>
+                <span>
+                    <script type="text/javascript">
+                       function button_event(){
+                       if (confirm("삭제된 리뷰는 복구가 불가능합니다. 리뷰를 삭제하시겠습니까?") == true){
+                            location.replace("{% url 'community:delete' board.id  %}");
+                        }
+                        else{
+                            return;
+                        }
+                        }
+                    </script>
+                    <a onclick="button_event();" style="text-decoration: none;">삭제</a>
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- ----------------------------내용영역------------------------------------ -->
+            <div class="card my-3" style="padding: 20px; min-height: 150px;">
+                <div>{{ board.content|linebreaks }}</div>
+
+                {% if board.file_image %}
+                    첨부파일
+                <a href = "{{board.file_image.url}}" download>
+                    <img src= "{{ board.file_image.url }}" height="100">
+                </a>
+                {% endif %}
+            </div>
+
+
+            <table class="next-before-list">
+                <tr>
+                    <th>이전글 : </th>
+                    <td>
+                        {% if board_before %}
+                        <a href="{% url 'community:detail' board_before.id %}">{{board_before.title}}</a>
+                        {% else%}
+                        이전글이 없습니다.
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>다음글 : </th>
+                    <td>
+                        {% if board_after %}
+                        <a href="{% url 'community:detail' board_after.id %}">{{board_after.title}}</a>
+                        {% else%}
+                        다음글이 없습니다.
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+
+            <div class="back-list">
+                <a href="{% url 'community:index'%}" role="button" class="btn btn-primary">목록</a>
+            </div>
+        </div>
+
+<style>
+    .board-info {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .board-info .info-star, .board-info .info-info {
+        color: #999999;
+    }
+
+    table.next-before-list {
+        table-layout: fixed;
+        margin: 10px 0;
+    }
+
+    table.next-before-list th {
+        width: 90px;
+        font-weight: normal;
+    }
+
+    table.next-before-list td {
+        width: 90%;
+    }
+
+    .like_item {
+        text-align: center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        position: relative;
+    }
+
+    .back-list {
+        text-align: center;
+    }
+
+    .modify_item {
+        text-align: right;
+        padding: 5px 0;
+    }
+</style>
+
+{% endblock %}

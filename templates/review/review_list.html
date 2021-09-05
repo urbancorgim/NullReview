@@ -1,0 +1,247 @@
+{% extends 'base.html' %} {% load static %} {% load review_filter %} {% block main %}
+<div class="row container my-3">
+    <span>
+    <img class="img-corny" src="{% static 'assets/img/review_corn.png' %}" alt="..." />
+    <!-- ---------------------------- 정렬 영역 --------------------------- -->
+    <form action="" method="GET" style="float: right; padding-top: 50px;">
+        <select name="sort" onchange="this.form.submit()">
+          <option name="sort-date" value="date">최신순</option>
+          <option name="sort-star" value="star">별점순</option>
+          <option name="sort-likes" value="like">추천순</option>
+        </select>
+    </form>
+        <script type="text/javascript">
+            // 정렬방식 셀렉트 박스 유지
+            var sort = document.getElementsByTagName('option')
+            sort.setAttribute('selected', 'selected')
+        </script>
+    </span>
+
+    <!---------------------- 검색결과 설명창 ---------------------->
+    {% if q %}
+    <h5>'{{ q }}' 검색 결과입니다.</h5>
+    {% endif %}
+    <!------------------------------------------------------------>
+
+    <table class="table">
+
+        <thead>
+            <tr class="review_table">
+                <th class="table-count">번호</th>
+                <th class="table-horse">영화명</th>
+                <th class="table-title">제목</th>
+                <th class="table-star">별점</th>
+                <th class="table-writer">작성자</th>
+                <th class="table-date">작성일</th>
+                <th class="table-count">추천</th>
+                <th class="table-count">비추</th>
+                <th class="table-count">조회</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if page_obj %} {% for review in page_obj %}
+            <tr>
+                <td class="table-count">
+                    <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
+                    {{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1 }}
+                </td>
+                <td class="table-horse">
+                    {{ review.movie.title }}
+                </td>
+                <td class="table-title">
+                    <a href="{% url 'review:review_detail' review.id %}" style="color: #999999; text-decoration:none;">{{ review }}</a>
+                </td>
+                <td class="star table-star">
+                    {% if review.star == 0 %} ☆☆☆☆☆ {% elif review.star == 1 %} ★☆☆☆☆ {% elif review.star == 2 %} ★★☆☆☆ {% elif review.star == 3 %} ★★★☆☆ {% elif review.star == 4 %} ★★★★☆ {% else %} ★★★★★ {% endif %}
+                </td>
+                <td class="table-writer">{{ review.author }}</td>
+                <td class="table-date">{{ review.create_date | date:"y/m/d" }}</td>
+                <td class="table-count">{{ review.like_review.count }}</td>
+                <td class="table-count">{{ review.unlike_review.count }}</td>
+                <td class="table-count">{{ review.review_hit }}</td>
+            </tr>
+            {% endfor %} {% else %} {% if q %}
+            <tr>
+                <td>일치하는 검색 결과가 없습니다.</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td>작성된 리뷰가 없습니다.</td>
+            </tr>
+            {% endif %} {% endif %}
+        </tbody>
+    </table>
+
+    <div>
+        <a href="{% url 'review:review_create' %}" class="btn btn-primary" role="button" style="float: right;">리뷰작성</a>
+    </div>
+
+    <!-- -------------------- 페이징처리 시작 -------------------- -->
+    <ul class="pagination justify-content-center" style="padding-top: 20px; padding-left:40px;">
+        <!-- 첫 페이지-->
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?sort={{ sort }}&type={{ type }}&q={{ q }}&page=1" data-page="">
+                <<</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">
+                <<</a>
+        </li>
+        {% endif %}
+        <!-- 이전페이지 -->
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?sort={{ sort }}&type={{ type }}&q={{ q }}&page={{ page_obj.previous_page_number }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">이전</a>
+        </li>
+        {% endif %}
+        <!-- -------------------- 페이지리스트 -------------------- -->
+        {% for page_number in page_range %} {% if page_number == page_obj.number %}
+        <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?sort={{ sort }}&type={{ type }}&q={{ q }}&page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link" href="?sort={{ sort }}&type={{ type }}&q={{ q }}&page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endif %} {% endfor %}
+        <!-- -------------------- 다음페이지 -------------------- -->
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?sort={{ sort }}&type={{ type }}&q={{ q }}&page={{ page_obj.next_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">다음</a>
+        </li>
+        {% endif %}
+        <!-- 마지막으로 -->
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?sort={{ sort }}&type={{ type }}&q={{ q }}&page={{ page_obj.paginator.num_pages }}">>></a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">>></a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <!-- ---------------------------- 페이징처리 끝 --------------------------- -->
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-------------------------------- 검색 영역 -------------------------------->
+    <form action="" method="GET">
+        <div class="search-item">
+            <select name="type">
+                    <option value="all">전체</option>
+                    <option value="title_content">제목 + 내용</option>
+                    <option value="movie">영화명</option>
+                    <option value="author">작성자</option>
+                </select>
+            <input type="text" name="q" value="{{ q }}" placeholder="리뷰 검색">
+            <button type="submit" id="search_btn" class="btn btn-primary">검색</button>
+        </div>
+    </form>
+    <script type="text/javascript">
+        // 검색 타입 박스 유지
+        target = window.location.search.split('&')[0].split('=')[1]
+        var type = document.getElementsByTagName('option')
+        for (var i = 0; i < 5; i++) {
+            if (type[i].value === target) {
+                type[i].setAttribute('selected', 'selected')
+            }
+        }
+    </script>
+    <!----------------------------------------------------------------------------------->
+</div>
+
+
+<style>
+    select {
+        display: inline-block;
+        border-radius: 3px;
+        padding: 5px;
+        width: 75px;
+        text-align: center;
+        color: black;
+        border: 1px solid #999999;
+        color: #999999;
+    }
+    
+    select option {
+        padding: 5px;
+        border: none;
+    }
+    
+    table {
+        min-width: 100%;
+        font-size: 14px;
+        table-layout: fixed;
+    }
+    
+    table thead tr {
+        text-align: center;
+    }
+    
+    table th,
+    td {
+        vertical-align: middle;
+    }
+    
+    table .table-count {
+        width: 4%;
+        text-align: center;
+        padding: 0;
+    }
+    
+    table .table-horse {
+        width: 12%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    table .table-star,
+    table .table-writer,
+    table .table-date {
+        width: 8%;
+        text-align: center;
+    }
+    
+    table .table-title {
+        width: 35%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .table-bottom {
+        position: relative;
+    }
+    
+    a.btn.btn-primary,
+    button.btn.btn-primary {
+        padding: 10px;
+        height: 36px;
+        margin-top: -1px;
+    }
+    
+    .search-item {
+        text-align: center;
+    }
+    
+    .search-item input {
+        display: inline-block;
+        height: 36px;
+        border: 1px solid #999999;
+        border-radius: 3px;
+    }
+</style>
+
+{% endblock %}

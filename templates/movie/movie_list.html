@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<div class="row container my-3">
+    <img class="img-corny" src="{% static 'assets/img/movie_corn.png' %}" alt="..." />
+
+    <div class="flex-movie">
+        {% if page_obj %}
+            {% for movie in page_obj %}
+
+            <div class="movie_item">
+                <div class="movie_thumb">
+                    {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}">
+                    {% else %}
+                    <img src="{% static 'images/noimg.jpg' %}">
+                    {% endif %}
+
+                    <div class="movie_info">
+                        <a href="{% url 'movie:detail' movie.id %}">
+                            <dl>
+                                <dt>개봉</dt>
+                                <dd>{{ movie.pub_date | date:"Y/m/d" }}</dd>
+                            </dl>
+                            <dl>
+                                <dt>등급</dt>
+                                <dd>{{ movie.age_limit }}</dd>
+                            </dl>
+                            <dl>
+                                <dt>감독</dt>
+                                <dd>{{ movie.director }}</dd>
+                            </dl>
+                            <dl>
+                                <dt>런닝타임</dt>
+                                <dd>{{ movie.running_time }} 분</dd>
+                            </dl>
+                        </a>
+                    </div>
+                </div>
+                <div class="movie_title">
+                    <a href="{% url 'movie:detail' movie.id %}">{{ movie.title }}</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="movie_none">
+            영화가 없습니다.
+        </div>
+        {% endif %}
+    </div>
+
+    {% if user.is_superuser %}
+    <div>
+        <a href="{% url 'movie:create' %}" class="btn btn-primary" role="button" style="float: right;">영화등록</a>
+    </div>
+    {% endif %}
+
+    <!-- 페이징처리 시작 -->
+    <ul class="pagination justify-content-center" style="padding-top: 20px;">
+
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">
+                <<</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="?page=1"><<</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">이전</a>
+        </li>
+        {% endif %}
+
+        <!-- 페이지리스트 -->
+        {% for page_number in page_range %}
+            {% if page_number == page_obj.number %}
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}"> 다음 </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">>></a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">다음</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">>></a>
+        </li>
+        {% endif %}
+    </ul>
+    <!-- 페이징처리 끝 -->
+
+</div>
+
+<style>
+    .flex-movie {
+        width: 100%;
+        display: flex;
+        flex-wrap : wrap;
+        justify-content: flex-start;
+    }
+
+    .movie_item {
+        width: 20%;
+        padding: 5px;
+        margin: 5px 0;
+    }
+
+    .movie_thumb {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .movie_thumb>img {
+        width: 100%;
+        height: 250px;
+
+    }
+
+    .movie_info {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(26, 25, 28, 0.9);
+        opacity: 0;
+        font-size: 11px;
+        transition: opacity 0.5s ease;
+    }
+
+    .movie_thumb:hover .movie_info {
+        opacity: 1;
+    }
+
+    .movie_info a {
+        display: block;
+        height: 100%;
+        box-sizing: border-box;
+        text-decoration: none;
+        padding: 15px;
+    }
+
+    .movie_info dl {
+        margin-bottom: 3px;
+    }
+
+    .movie_info dt {
+        float: left;
+        width: 30px;
+        color: #7A7A7A;
+    }
+
+    .movie_info dd {
+        overflow: hidden;
+        color: #D4D4D4;
+    }
+
+    .movie_title {
+        width: 100%;
+        text-align: center;
+        padding: 5px 0;
+    }
+
+    .movie_title a {
+        text-decoration: none;
+    }
+
+</style>
+
+{% endblock %}

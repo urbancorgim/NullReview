@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{%block bootstrap%}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+{%endblock%}
+
+
+
+{%block nav%}
+    {% include 'base-nav.html' %}
+{%endblock%}
+
+
+{% block main %}
+        <!-- Masthead-->
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
+                <div class="d-flex justify-content-center">
+                    <div class="text-center">
+                        <h1 class="mx-auto my-0 text-uppercase">share&enjoy</h1>
+                        <h2 class="text-white-50 mx-auto mt-2 mb-5">자신만의 인생영화가 있다면 공유하고, <br>새로운 영화를 발견하세요.</h2>
+                        <a class="btn btn-primary" href="#about">더 알아보기</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- About-->
+        <section class="about-section text-center" id="about">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2 class="text-white mb-4">언제 어디서나 쉽고 빠르게</h2>
+                        <p class="text-white-50">
+                            매주 업데이트 되는 5백 여편의 신작영화를 찾아보고 서로 공유할 수 있어요.
+                            <a href="{% url 'movie:index' %}">Movie 바로가기</a>에서 장르별, 별점별, 검색기능을 통해 간편하게 찾을 수 있습니다.
+                            지금 바로 최신 영화 트렌드를 알아보세요.
+                        </p>
+                    </div>
+                </div>
+                <img class="img-fluid" src="{% static 'assets/img/ipad.png' %}" alt="..." />
+            </div>
+        </section>
+        <!-- Projects-->
+        <section class="projects-section bg-light" id="projects">
+            <div class="container px-4 px-lg-5">
+                <!-- Featured Project Row-->
+                <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
+                    <div class="col-xl-8 col-lg-7"><img class="img-fluid mb-3 mb-lg-0" src="{% static 'assets/img/cinema.png' %}" alt="..." /></div>
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="featured-text text-center text-lg-left">
+                            <h4>여럿이 함께, 하나의 영화에</h4>
+                            <p class="text-black-50 mb-0">별점과 함께 다양한 느낀점을 나누어 보세요.<br>같은 영화도 새롭게 다가올 것입니다.</p>
+                            <br><a href="{% url 'review:index' %}">Review 바로가기</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project One Row-->
+                <div class="row gx-0 mb-5 mb-lg-0 justify-content-center">
+                    <div class="col-lg-6"><img class="img-fluid" src="{% static 'assets/img/communityy.png' %}" alt="..." /></div>
+                    <div class="col-lg-6">
+                        <div class="bg-black text-center h-100 project">
+                            <div class="d-flex h-100">
+                                <box class="project-text w-100 my-auto text-center text-lg-left" style>
+                                    <h4 class="text-white">Community</h4>
+                                    <p class="mb-0 text-white-50">영화리뷰 이외에도 <a href="{% url 'community:index' %}">커뮤니티</a>에서 자유롭게 관심사를 공유할 수<br>있습니다. 신설 영화관, 마블 배우들의 내한과 같은 소식들을<br>나누어 보세요.</p>
+                                </box>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Two Row-->
+                <div class="row gx-0 justify-content-center">
+                    <div class="col-lg-6"><img class="img-fluid" src="{% static 'assets/img/movieimage.png' %}" alt="..." /></div>
+                    <div class="col-lg-6 order-lg-first">
+                        <div class="bg-black text-center h-100 project">
+                            <div class="d-flex h-100">
+                                <div class="project-text w-100 my-auto text-center text-lg-right">
+                                    <h4 class="text-white">Ticketing</h4>
+                                    <p class="mb-0 text-white-50">영화를 찾다가 보고싶은 영화를 발견하면 링크를 통해 <br>바로 <a href="https://www.cgv.co.kr/">예매</a>하실 수 있습니다.</p>
+                                    <hr class="d-none d-lg-block mb-0 me-0" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+{% endblock %}

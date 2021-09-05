@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load board_filter %}
+
+{% block main %}
+<div class="row container my-3">
+
+    <img class="img-corny" src="{% static 'assets/img/community_corn.png' %}" alt="..." />
+    <table class="table board-table">
+        <thead class="thead-light">
+            <tr class="text-center">
+                <th class="table-count" scope="col">번호</th>
+                <th class="table-horse" scope="col">머리글</th>
+                <th class="table-title" scope="col">제목</th>
+                <th class="table-writer" scope="col">작성자</th>
+                <th class="table-date" scope="col">작성일</th>
+                <th class="table-count" scope="col">조회수</th>
+            </tr>
+            {% if q %}
+            <tr class="text-center" style="display:none">
+                <td>{{ board.id }}</td>
+                <td>{{ board.content_type }}</td>
+                <td class="text-left">{{ board }}</a>
+                </td>
+                <td>{{ board.writer }}</td>
+                <td>{{ board.created_date | date:"y/m/d"}}</td>
+                <td>{{ board.board_hit }}</td>
+            </tr>
+            {% endif %}
+        </thead>
+        <tbody>
+
+            {% if page_obj %}
+            {% for board in page_obj %}
+            <tr>
+                <td class="table-count" >
+                    <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
+                    {{ page_obj.paginator.count|sub:page_obj.start_index|sub:forloop.counter0|add:1 }}
+                </td>
+                <td class="table-horse">
+                    <span>{{ board.content_type }}</span>
+                </td>
+                <td class="table-title">
+                    <a href="{% url 'community:detail' board.id %}">{{ board }}</a>
+                </td>
+                <td class="table-writer">
+                    <span>{{ board.writer }}</span>
+                </td>
+                <td class="table-date">
+                    <span>{{ board.created_date | date:"y/m/d" }}</span>
+                </td>
+                <td class="table-count" >
+                    <span>{{ board.board_hit}}</span>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            {% if q %}
+            <tr class="text-center">
+                <td colspan="6">
+                    일치하는 검색 결과가 없습니다.
+                </td>
+            </tr>
+            {% else %}
+            <tr class="text-center">
+                <td colspan="6">
+                    작성된 게시글이 없습니다.
+                </td>
+            </tr>
+            {% endif %}
+            {% endif %}
+        </tbody>
+    </table>
+
+
+
+    <div>
+        <a href="{% url 'community:post' %}" class="btn btn-primary" role="button" style="float: right;">글쓰기</a>
+    </div>
+
+    <!-- -------------------- 페이징처리 시작 -------------------- -->
+    {% if is_paginated %}
+    <ul class="pagination justify-content-center" style="padding-top: 18px; padding-left:40px;">
+        <!-- 이전페이지 -->
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?type={{ type }}&q={{ q }}&page=1"><<</a>
+        </li>
+        {%else%}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false"><<</a>
+        </li>
+        {% endif %}
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?type={{ type }}&q={{ q }}&page={{ page_obj.previous_page_number }}">
+                이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">
+                이전</a>
+        </li>
+        {% endif %}
+        <!-- -------------------- 페이지리스트 -------------------- -->
+        {% for page_number in page_range %}
+        {% if page_number == page_obj.number %}
+        <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?type={{ type }}&q={{ q }}&page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link" href="?type={{ type }}&q={{ q }}&page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        <!-- -------------------- 다음페이지 -------------------- -->
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?type={{ type }}&q={{ q }}&page={{ page_obj.next_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">다음</a>
+        </li>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?type={{ type }}&q={{ q }}&page={{ page_obj.paginator.num_pages }}">>></a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" onclick="return false">>></a>
+        </li>
+        {% endif %}
+    </ul>
+    {% endif %}
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-------------------------------- 검색 영역 -------------------------------->
+    <form action="" method="GET">
+        <div class="search-item">
+            <select name="type">
+                <option value="all">전체</option>
+                <option value="title_content">제목 + 내용</option>
+                <option value="movie">영화명</option>
+                <option value="author">작성자</option>
+            </select>
+            <input type="text" name="q" value="{{ q }}" placeholder="게시글 검색">
+            <button type="submit" id="search_btn" class="btn btn-primary">검색</button>
+        </div>
+    </form>
+    <script type="text/javascript">
+    // 검색 타입 박스 유지
+    target = window.location.search.split('&')[0].split('=')[1]
+    var type = document.getElementsByTagName('option')
+    for (var i = 0; i < 5; i++) {
+        if (type[i].value === target) {
+            type[i].setAttribute('selected', 'selected')
+        }
+    }
+    </script>
+
+</div>
+
+<style>
+    select {
+        display: inline-block;
+        border-radius: 3px;
+        padding: 5px;
+        width: 75px;
+        text-align: center;
+        color: black;
+        border: 1px solid #999999;
+        color: #999999;
+    }
+
+    select option {
+        padding: 5px;
+        border: none;
+    }
+
+    .board-table {
+        min-width:100%;
+        font-size: 14px;
+        table-layout: fixed;
+    }
+
+    .board-table thead tr {
+        text-align: center;
+    }
+
+    .board-table th, td {
+        vertical-align: middle;
+    }
+
+    .board-table .table-count {
+        width:4%;
+        text-align: center;
+        padding: 0;
+    }
+
+    .board-table .table-horse {
+        width: 8%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+    }
+
+    .board-table .table-writer {
+        width: 10%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+    }
+
+    .board-table .table-date {
+        width: 7%;
+        text-align: center;
+    }
+
+    .board-table .table-title {
+        width: 35%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .board-table .table-title a {
+        text-decoration: none;
+        color: #999999;
+    }
+
+    .table-bottom {
+        position: relative;
+    }
+
+
+    a.btn.btn-primary, button.btn.btn-primary {
+        padding: 10px;
+        height: 36px;
+        margin-top: -1px;
+    }
+
+    .search-item {
+        text-align: center;
+    }
+
+    .search-item input {
+        display: inline-block;
+        height: 36px;
+        border: 1px solid #999999;
+        border-radius: 3px;
+    }
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load review_filter %}
+
+
+{% block main %}
+<div class="row container my-3" style="width: 900px;">
+    <img class="img-corny" src="{% static 'assets/img/profile_corn.png' %}" alt="..." />
+     <div>
+        <ul class="list-group">
+            <li class="list-group-item" style="border-bottom-width: 5px;"><b style="font-size: 18px">{{ request.user.nickname }} ({{request.user.email}}) 님의 마이페이지입니다.</b></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:review'%}" style="color: black; text-decoration: none;">내가 쓴 리뷰</a></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:pick'%}" style="color: #f5bc10; font-weight: bold; text-decoration: none;">찜한 영화</a></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:logout' %}" style="color: #f08200; font-weight: bold; text-decoration: underline;">로그아웃</a></li>
+        </ul>
+    </div>
+
+
+    <div class="flex-movie">
+        {% if pick_list %}
+            {% for pick in pick_list %}
+
+            <div class="movie_item">
+                <div class="movie_thumb">
+                    {% if pick.movie.poster %}
+                    <img src="{{ pick.movie.poster.url }}">
+                    {% else %}
+                    <img src="{% static 'images/noimg.jpg' %}">
+                    {% endif %}
+
+                    <div class="movie_info">
+                        <a href="{% url 'movie:detail' pick.movie.id %}">
+                            <dl>
+                                <dt>개봉</dt>
+                                <dd>{{ pick.movie.pub_date | date:"Y/m/d" }}</dd>
+                            </dl>
+                            <dl>
+                                <dt>등급</dt>
+                                <dd>{{ pick.movie.age_limit }}</dd>
+                            </dl>
+                            <dl>
+                                <dt>감독</dt>
+                                <dd>{{ pick.movie.director }}</dd>
+                            </dl>
+                            <dl>
+                                <dt>런닝타임</dt>
+                                <dd>{{ pick.movie.running_time }} 분</dd>
+                            </dl>
+                        </a>
+                    </div>
+                </div>
+                <div class="movie_title">
+                    <a href="{% url 'movie:detail' pick.movie.id %}">{{ pick.movie.title }}</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="movie_none">
+            영화가 없습니다.
+        </div>
+        {% endif %}
+    </div>
+
+
+
+
+        <ul class="pagination justify-content-center">
+            {% if review_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1"><<</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" tabindex="-1" aria-disabled="true" href="#"><<</a>
+            </li>
+            {% endif %}
+            {% if review_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ review_list.previous_page_number }}">이전</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+            </li>
+            {% endif %}
+            {% for page in page_range %}
+                <li class="page-item {% if page == review_list.number %}active{% endif %}" aria-current="page">
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+            {% if review_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ review_list.next_page_number }}">다음</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+            </li>
+            {% endif %}
+            {% if review_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ review_list.paginator.num_pages }}">>></a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" tabindex="-1" aria-disabled="true" href="#">>></a>
+            </li>
+            {% endif %}
+        </ul>
+
+</div>
+
+<style>
+    .flex-movie {
+        width: 100%;
+        display: flex;
+        flex-wrap : wrap;
+        justify-content: flex-start;
+        margin: 20px 0;
+    }
+
+    .movie_item {
+        width: 20%;
+        padding: 5px;
+        margin: 5px 0;
+    }
+
+    .movie_thumb {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .movie_thumb>img {
+        width: 100%;
+        height: 250px;
+
+    }
+
+    .movie_info {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(26, 25, 28, 0.9);
+        opacity: 0;
+        font-size: 11px;
+        transition: opacity 0.5s ease;
+    }
+
+    .movie_thumb:hover .movie_info {
+        opacity: 1;
+    }
+
+    .movie_info a {
+        display: block;
+        height: 100%;
+        box-sizing: border-box;
+        text-decoration: none;
+        padding: 15px;
+    }
+
+    .movie_info dl {
+        margin-bottom: 3px;
+    }
+
+    .movie_info dt {
+        float: left;
+        width: 30px;
+        color: #7A7A7A;
+    }
+
+    .movie_info dd {
+        overflow: hidden;
+        color: #D4D4D4;
+    }
+
+    .movie_title {
+        width: 100%;
+        text-align: center;
+        padding: 5px 0;
+    }
+
+    .movie_title a {
+        text-decoration: none;
+    }
+
+</style>
+
+{% endblock %}

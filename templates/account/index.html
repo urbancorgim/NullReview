@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+<div class="row container my-3" style="padding: 200px 190px 250px 190px;">
+    <img class="img-corny" src="{% static 'assets/img/profile_corn.png' %}" alt="..." />
+    <div class="panel-info">
+        <ul class="list-group">
+            <li class="list-group-item" style="border-bottom-width: 5px;"><b style="font-size: 18px">{{ request.user.nickname }} ({{request.user.email}}) 님의 마이페이지입니다.</b></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:review'%}" style="color: black; text-decoration: none;">내가 쓴 리뷰</a></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:pick'%}" style="color: black; text-decoration: none;">찜한 영화</a></li>
+            <li class="list-group-item"><a class="panel-info" href="{% url 'account:logout' %}" style="color: #f08200; font-weight: bold; text-decoration: underline;">로그아웃</a></li>
+        </ul>
+    </div>
+    <div class="col-md-10">
+<!--        <h1>{{ user.nickname }}</h1>-->
+<!--        <p>{{request.user.email}}</p>-->
+    </div>
+</div>
+{% endblock %}

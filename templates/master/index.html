@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block main %}
+  <div class="row container my-3">
+    <center>
+    <img class="img-corn" src="{% static 'assets/img/admin_corn.png' %}" alt="..." />
+    <div class="row m-0 justify-content-center mt-5 pt-5">
+      <div class="col-5 button-1" OnClick="location.href ='{% url 'master:movies' %}'">
+        <div class="eff-1"></div>
+        <a href="{% url 'master:movies' %}" class="btn btn-primary" role="button" style="...">게시물 관리</a>
+      </div>
+      <div class="col-5 button-4" OnClick="location.href ='{% url 'master:users' %}'">
+        <div class="eff-4"></div>
+        <a href="{% url 'master:users' %}" class="btn btn-primary" role="button" style="...">회원 관리</a>
+      </div>
+    </div>
+    </center>
+  </div>
+{% endblock %}

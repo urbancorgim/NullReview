@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block main %}
+<center>
+<div class="row container my-3" style="
+  padding-top: 100px;
+">
+  <div class="d-flex justify-content-center mt-2">
+    <div class="alert alert-warning" role="alert">
+      <img class="img-corn" src="{% static 'assets/img/manage_corn.png' %}" alt="..." />
+      <h1 class="font-weight-bold">관리자만 접근하실 수 있습니다</h1><br>
+      <h5 class="font-weight-bold">사이트 이용에 불편한 점이나 궁금한 점이 있으시면<br>하단의 실시간 문의를 이용해주세요</h5><br><br>
+      <span>
+        <button class="btn btn-primary" onclick="history.back(-1);">뒤로가기</button>
+        <a class="btn btn-primary" href="{%url 'master:index' %}">홈으로</a>
+      </span>
+    </div>
+  </div>
+</div>
+</center>
+{% endblock %}
